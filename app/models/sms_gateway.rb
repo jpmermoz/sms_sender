@@ -2,7 +2,16 @@ class SmsGateway
   include Singleton
 
   def initialize
-    @port = SerialPort.new('/dev/ttyUSB0', 9600)
+    begin
+      @port = SerialPort.new('/dev/ttyUSB0', 9600)
+    rescue
+      begin
+        @port ||= SerialPort.new('/dev/ttyUSB1', 9600)
+      rescue
+        @port ||= SerialPort.new('/dev/ttyUSB2', 9600)
+      end
+    end
+
     cmd("AT")
     cmd("AT+CMGF=1")
     @debug = true
